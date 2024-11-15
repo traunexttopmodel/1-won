@@ -44,47 +44,34 @@ eeg_data = data[eeg_channels]
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
 
-#Plot the first EEG channel
-plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
-plt.title("Raw EEG Data")
-plt.xlabel("Sample")
-plt.ylabel("Amplitude")
-plt.show()
+for i in range(0,4):
+    #Plot EEG channels
+    plt.plot(np.arange(eeg_data.shape[1]), eeg_data[i])
+    plt.title("Raw EEG Data")
+    plt.xlabel("Sample")
+    plt.ylabel("Amplitude")
+    plt.show()
 
-# Define brainwave frequency bands
-delta_band = (0.5, 4)
-theta_band = (4, 8)
-alpha_band = (8, 13)
-beta_band = (13, 32)
-gamma_band = (32, 100)
+# # Define brainwave frequency bands
+# delta_band = (0.5, 4)
+# theta_band = (4, 8)
+# alpha_band = (8, 13)
+# beta_band = (13, 32)
+# gamma_band = (32, 100)
 
-# Perform FFT
-sampling_rate = BoardShim.get_sampling_rate(board_id)
-fft_result = np.fft.fft(eeg_data)
-frequencies = np.fft.fftfreq(len(fft_result), d=1/sampling_rate)
-magnitude = np.abs(fft_result)
+# # Perform FFT
+# sampling_rate = BoardShim.get_sampling_rate(board_id)
+# fft_result = np.fft.fft(eeg_data)
+# frequencies = np.fft.fftfreq(len(fft_result), d=1/sampling_rate)
+# magnitude = np.abs(fft_result)
 
-# Calculate power in each band
-def band_power(frequencies, magnitudes, band):
-    indices = np.where((frequencies >= band[0]) & (frequencies <= band[1]))
-    return np.sum(magnitudes[indices])
+#------------------------------------------ SAVE DATA ---------------------------------------------------
 
-delta_power = band_power(frequencies, magnitude, delta_band)
-theta_power = band_power(frequencies, magnitude, theta_band)
-alpha_power = band_power(frequencies, magnitude, alpha_band)
-beta_power = band_power(frequencies, magnitude, beta_band)
-gamma_power = band_power(frequencies, magnitude, gamma_band)
+# print(eeg_data.shape)
+# DataFilter.write_file(eeg_data, 'eeg_data_test.csv', 'w') #Writes into a csv file in the current directory
 
-# Identify the dominant brainwave type
-power_levels = {
-    'Delta': delta_power,
-    'Theta': theta_power,
-    'Alpha': alpha_power,
-    'Beta': beta_power,
-    'Gamma': gamma_power
-}
+# restored_data = DataFilter.read_file('eeg_data_test.csv') #Reads file back
+# print(restored_data.shape)
 
-dominant_brainwave = max(power_levels, key=power_levels.get)
-
-print("Power Levels:", power_levels)
-print("Dominant Brainwave:", dominant_brainwave)
+# #This shows how much the saved data differs from the original data, they are very similar but not equal.
+# print(eeg_data - restored_data)

@@ -17,6 +17,8 @@ from brainflow.data_filter import DataFilter, FilterTypes
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
 # brain wave ranges (in Hz) - (start, end)
 delta = (0.5, 4)
 theta = (4, 8)
@@ -32,21 +34,6 @@ board_id = 38 #Change this depending on your device
 
 #Prepares the board for reading data
 
-"""
-try:
-    board_id = -1
-    board = BoardShim(board_id, params)
-    board.prepare_session()
-    print("Successfully prepared physical board.")
-except Exception as e:
-    print(e)
-    # If the device cannot be found or is being used elsewhere, creates a synthetic board instead
-    print("Device could not be found or is being used by another program, creating synthetic board.")
-    board_id = BoardIds.SYNTHETIC_BOARD
-    board = BoardShim(board_id, params)
-    board.prepare_session()
-"""
-
 params = BrainFlowInputParams()
 
 board = BoardShim(BoardIds.MUSE_2_BOARD.value, params)
@@ -56,21 +43,25 @@ board.start_stream()
 time.sleep(5)
 
 data = board.get_board_data()
-
-eeg_data = data[BoardShim.get_eeg_channels(BoardIds.MUSE_2_BOARD.value)[0]]
+eeg_channels = BoardShim.get_eeg_channels(BoardIds.MUSE_2_BOARD.value)
 sampling_rate = BoardShim.get_sampling_rate(BoardIds.MUSE_2_BOARD.value)
 
-# Perform Fast Fourier Transform (FFT)
-fft_result = np.fft.fft(eeg_data)
-fft_magnitude = np.abs(fft_result)  # Magnitude of the FFT
-frequencies = np.fft.fftfreq(len(fft_result), 1 / sampling_rate)
+# isolate the eeg channels
+eeg_channels = board.get_eeg_channels(board_id)
+eeg_data = data[eeg_channels]
 
-# Only keep the positive frequencies
-positive_freqs = frequencies[:len(frequencies) // 2]
-positive_magnitude = fft_magnitude[:len(fft_magnitude) // 2]
+print(eeg_channels)
+print(eeg_data.shape)
+
+# Perform Fast Fourier Transform (FFT)
+fft_list = []
+for channel in eeg_data:
+    fft_result = np.fft.fft(channel)
+    fft_magnitude = np.abs(fft_result)  # Magnitude of the FFT
+    frequencies = np.fft.fftfreq(len(fft_result), 1 / sampling_rate)
+    fft_list.append(frequencies)
 
 # Plot the frequency spectrum
-plt.plot(positive_freqs, positive_magnitude)
 plt.title("Frequency Spectrum of EEG Data (TP9)")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude")
