@@ -52,15 +52,21 @@ plt.xlabel("Sample")
 plt.ylabel("Amplitude")
 plt.show()
 
+
+# ----------------------TRYING TO FILTER & SEE ALPHA/BETA----------------------
+
 #Filter data - apply to each channel separately 
 #filter to remove artifacts
-for channel in range(eeg_data.shape[0]): # applied to all channels
+for channel in range(eeg_data.shape[0]): # applied to all channels??
     DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
                                        FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
     DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
                                         FilterTypes.BUTTERWORTH, 0)
 plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
-
+plt.title("Filtered EEG Data")
+plt.show()
+#plt.plot(x, y)
+#here using NumPy library to create array of basically timestamps for all the eeg data points we collect (horizontal axis)
 
 # Brainwave Type frequency bands
 alpha_band = (8, 13)
@@ -68,15 +74,26 @@ beta_band = (13, 35)
 gamma_band = (35, 100)
 
 #Filter to count Alpha Waves ?
-for channel in range(eeg_data.shape[0]): # applied to all channels
-    DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 13.0, 4, 
-                                       FilterTypes.BUTTERWORTH, 0) #ripple = 0. what is a ripple? how much oscillation 
-
+def alpha():
+    for channel in range(eeg_data.shape[0]): # all channels??
+        DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 13.0, 4, 
+                                           FilterTypes.BUTTERWORTH, 0) #ripple = 0. what is a ripple? how much oscillation 
+plt.plot(np.arange(eeg_data.shape[1]), alpha())
+plt.xlabel("Alpha")
+plt.title("Filtered EEG Data: Alpha Waves")
+plt.show()
+# OR plt.plot(np.arange( eeg_data[1]), eeg_data.shape[0])
 
 #Filter to count Beta Waves ?
-for channel in range(eeg_data.shape[0]): # applied to all channels
-    DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 13.0, 35.0, 4, 
-                                       FilterTypes.BUTTERWORTH, 0) #ripple = 0. what is a ripple? how much oscillation 
+def beta():
+    for channel in range(eeg_data.shape[0]): # applied to all channels
+        DataFilter.perform_bandpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 13.0, 35.0, 4, 
+                                           FilterTypes.BUTTERWORTH, 0) #ripple = 0. what is a ripple? how much oscillation 
+plt.plot(np.arange(eeg_data.shape[1]), beta())
+plt.title("Filtered EEG Data: Beta Waves")
+plt.show()
+
+
 
 
 
