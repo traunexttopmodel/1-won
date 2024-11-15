@@ -16,6 +16,8 @@ def main():
     else: #csv fle
         eeg_channels, eeg_data = loadRawData(filename)
 
+    eeg_channels = [c-1 for c in eeg_channels] #readjust channel index
+
     #--------------------------------------------------------------------------------
     # SAVE RAW EEG DATASET IF WANT TO
     #--------------------------------------------------------------------------------

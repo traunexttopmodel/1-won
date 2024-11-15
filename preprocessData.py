@@ -13,6 +13,7 @@ def preprocessData(eeg_channels, eeg_data):
     sampling_rate = BoardShim.get_sampling_rate(board_id)
 
     #----------------------- FILTER DATA FOR EACH CHANNEL ----------------------
+
     for eeg_channel in eeg_channels:
         # Filtering the spike at 60Hz
         DataFilter.perform_bandstop(
