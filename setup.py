@@ -64,27 +64,3 @@ fft_result = np.fft.fft(eeg_data)
 frequencies = np.fft.fftfreq(len(fft_result), d=1/sampling_rate)
 magnitude = np.abs(fft_result)
 
-# Calculate power in each band
-def band_power(frequencies, magnitudes, band):
-    indices = np.where((frequencies >= band[0]) & (frequencies <= band[1]))
-    return np.sum(magnitudes[indices])
-
-delta_power = band_power(frequencies, magnitude, delta_band)
-theta_power = band_power(frequencies, magnitude, theta_band)
-alpha_power = band_power(frequencies, magnitude, alpha_band)
-beta_power = band_power(frequencies, magnitude, beta_band)
-gamma_power = band_power(frequencies, magnitude, gamma_band)
-
-# Identify the dominant brainwave type
-power_levels = {
-    'Delta': delta_power,
-    'Theta': theta_power,
-    'Alpha': alpha_power,
-    'Beta': beta_power,
-    'Gamma': gamma_power
-}
-
-dominant_brainwave = max(power_levels, key=power_levels.get)
-
-print("Power Levels:", power_levels)
-print("Dominant Brainwave:", dominant_brainwave)
