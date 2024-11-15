@@ -11,10 +11,11 @@ import statistics
 
 
 
-sampling_rate = BoardShim.get_sampling_rate(board_id)
+
 params = BrainFlowInputParams()
 params.serial_port = 'COM6' #Change this depending on your device and OS
 board_id = 38 #Change this depending on your device
+sampling_rate = BoardShim.get_sampling_rate(board_id)
 
 #Prepares the board for reading data
 try:
