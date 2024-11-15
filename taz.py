@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import time
 import argparse
 import pandas as pd
+import statistics
 
 
 
@@ -51,7 +52,10 @@ board.release_session()
 
 #We want to isolate just the eeg data
 eeg_channels = board.get_eeg_channels(board_id)
+print(eeg_channels)
 eeg_data = data[eeg_channels]
+EEG_channels=[0,1,2,3] 
+# '''EEG channel codes [0,1,2,3]'''
 #print(eeg_data.shape)
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
@@ -106,41 +110,101 @@ plt.show()
 
 #-------------------------------------CHANNEL GRAPHS-----------------------
 
+for channel_idx in EEG_channels: #channel idx is indices for the different muse channels; channels 0-3 are the eeg channels
+    DataFilter.detrend(data[channel_idx], DetrendOperations.LINEAR.value)
+    psd0=DataFilter.get_psd_welch(data[channel_idx], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+    plt.plot(psd0[1][:60], psd0[0][:60])
+    plt.title(f"Channel {channel_idx}")
+    plt.show()
 
-eeg_channel1=eeg_channels[1]
-DataFilter.detrend(data[eeg_channel1], DetrendOperations.LINEAR.value)
-psd=DataFilter.get_psd_welch(data[eeg_channel1], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-plt.plot(psd[1][:60], psd[0][:60])
-plt.title("Channel 1")
-plt.show()
 
-eeg_channel2=eeg_channels[2]
-DataFilter.detrend(data[eeg_channel2], DetrendOperations.LINEAR.value)
-psd=DataFilter.get_psd_welch(data[eeg_channel2], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-plt.plot(psd[1][:60], psd[0][:60])
-plt.title("Channel 2")
-plt.show()
 
-eeg_channel3=eeg_channels[3]
-DataFilter.detrend(data[eeg_channel3], DetrendOperations.LINEAR.value)
-psd=DataFilter.get_psd_welch(data[eeg_channel3], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-plt.plot(psd[1][:60], psd[0][:60])
-plt.title("Channel 3")
-plt.show()
 
-eeg_channel4=eeg_channels[4]
-DataFilter.detrend(data[eeg_channel4], DetrendOperations.LINEAR.value)
-psd=DataFilter.get_psd_welch(data[eeg_channel4], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-plt.plot(psd[1][:60], psd[0][:60])
-plt.title("Channel 4")
-plt.show()
 
-delta= DataFilter.get_band_power(psd, 0.5, 4.0)
-theta= DataFilter.get_band_power(psd, 4.0, 8.0)
-print("Delta:Theta Ratio is: %f" %(delta/theta))
+# eeg_channel0=eeg_channels[0]
+# DataFilter.detrend(data[eeg_channel0], DetrendOperations.LINEAR.value)
+# psd0=DataFilter.get_psd_welch(data[eeg_channel0], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+# plt.plot(psd0[1][:60], psd0[0][:60])
+# plt.title("Channel 0")
+# plt.show()
+
+# eeg_channel1=eeg_channels[1]
+# DataFilter.detrend(data[eeg_channel1], DetrendOperations.LINEAR.value)
+# psd1=DataFilter.get_psd_welch(data[eeg_channel1], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+# plt.plot(psd1[1][:60], psd1[0][:60])
+# plt.title("Channel 1")
+# plt.show()
+
+# eeg_channel2=eeg_channels[2]
+# DataFilter.detrend(data[eeg_channel2], DetrendOperations.LINEAR.value)
+# psd2=DataFilter.get_psd_welch(data[eeg_channel2], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+# plt.plot(psd2[1][:60], psd2[0][:60])
+# plt.title("Channel 2")
+# plt.show()
+
+# eeg_channel3=eeg_channels[3]
+# DataFilter.detrend(data[eeg_channel3], DetrendOperations.LINEAR.value)
+# psd3=DataFilter.get_psd_welch(data[eeg_channel3], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+# plt.plot(psd3[1][:60], psd3[0][:60])
+# plt.title("Channel 3")
+# plt.show()
+
+
+
+# delta=statistics.mean(
+#     DataFilter.get_band_power(psd1, 0.5, 4.0),
+#     DataFilter.get_band_power(psd2, 0.5, 4.0),
+#     DataFilter.get_band_power(psd3, 0.5, 4.0),
+#     DataFilter.get_band_power(psd4, 0.5, 4.0))
+
+
+
+# theta= statistics.mean(    
+#     DataFilter.get_band_power(psd1, 4.0, 8.0),
+#     DataFilter.get_band_power(psd2, 4.0, 8.0),
+#     DataFilter.get_band_power(psd3, 4.0, 8.0),
+#     DataFilter.get_band_power(psd4, 4.0, 8.0))
+
+
+
+
+bands = {
+    "Delta": (0.5, 4.0),
+    "Theta": (4.0, 8.0),
+    "Alpha": (8.0, 13.0),
+    "Beta": (13.0, 30.0)
+}
+
+
+def get_bandpowers_for_channel(eeg_data, channel_idx, bands):
+    psd = DataFilter.get_psd(eeg_data[channel_idx], len(eeg_data[channel_idx]), 0)  # Compute PSD
+    bandpowers = {}
+    for band_name, (low, high) in bands.items():
+        bandpower = DataFilter.get_band_power(psd, low, high)
+        bandpowers[band_name] = bandpower
+    return bandpowers
+
+channel_bandpowers = {}
+for channel_idx in EEG_channels:
+    bandpowers = get_bandpowers_for_channel(eeg_data, channel_idx, bands)
+    channel_bandpowers[channel_idx] = bandpowers
+
+average_bandpowers = {band_name: 0.0 for band_name in bands}
+
+for band_name in bands:
+    total_bandpower = 0
+    for channel_idx in EEG_channels:
+        total_bandpower += channel_bandpowers[channel_idx][band_name]
+    average_bandpowers[band_name] = total_bandpower / len(EEG_channels)
+
+
+print("Delta:Theta Ratio is: %f" %((average_bandpowers[bands.Delta])/(average_bandpowers[bands.Theta])))
+
 
 
 # Brainwave Type frequency bands
+delta = (0.5, 4.0),
+theta= (4.0, 8.0)
 alpha_band = (8, 13)
 beta_band = (13, 35)
 gamma_band = (35, 100)
