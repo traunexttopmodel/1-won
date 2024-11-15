@@ -53,16 +53,13 @@ board_id = 38
 # board.release_session()
 
 #We want to isolate just the eeg data
-<<<<<<< HEAD
 eeg_channels = board.get_eeg_channels(board_id)
 print(eeg_channels)
 eeg_data = data[eeg_channels]
 EEG_channels=[0,1,2,3] 
 # '''EEG channel codes [0,1,2,3]'''
-=======
 eeg_channels = BoardShim.get_eeg_channels(board_id)
 # eeg_data = data[eeg_channels]
->>>>>>> d3f7e5ee93aa66399381854342279d310091268f
 #print(eeg_data.shape)
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
