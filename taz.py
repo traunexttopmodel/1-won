@@ -50,6 +50,9 @@ plt.xlabel("Sample")
 plt.ylabel("Amplitude")
 plt.show()
 
+
+# ----------------------TRYING TO FILTER & SEE ALPHA/BETA----------------------
+
 #Filter data - apply to each channel separately 
 #filter to remove artifacts
 for channel in range(eeg_data.shape[0]): # applied to all channels??
@@ -87,6 +90,9 @@ def beta():
 plt.plot(np.arange(eeg_data.shape[1]), beta())
 plt.title("Filtered EEG Data: Beta Waves")
 plt.show()
+
+
+
 
 
 # Perform FFT
