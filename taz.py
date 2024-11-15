@@ -11,10 +11,10 @@ import statistics
 
 
 
+sampling_rate = BoardShim.get_sampling_rate(board_id)
 params = BrainFlowInputParams()
 params.serial_port = 'COM6' #Change this depending on your device and OS
 board_id = 38 #Change this depending on your device
-sampling_rate = BoardShim.get_sampling_rate(board_id)
 
 #Prepares the board for reading data
 try:
@@ -29,28 +29,21 @@ except Exception as e:
     board_id = BoardIds.SYNTHETIC_BOARD
     board = BoardShim(board_id, params)
     board.prepare_session()
-
-nfft = DataFilter.get_nearest_power_of_two(sampling_rate)
-
 #Releases the board session
 board.release_session()
-
-
-
 
 #------------------------------------------ GET DATA ---------------------------------------------------
 
 #read data
-# print("Starting Stream")
-# board.prepare_session()
-# board.start_stream()
-# time.sleep(5) #wait 5 seconds
-# data = board.get_board_data() #gets all data from board and removes it from internal buffer
-data = DataFilter.read_file('eeg_data_test_6.csv') #Reads file back
-board_id = 38
-# print("Ending stream")
-# board.stop_stream()
-# board.release_session()
+print("Starting Stream")
+board.prepare_session()
+board.start_stream()
+time.sleep(5) #wait 5 seconds
+data = board.get_board_data() #gets all data from board and removes it from internal buffer
+print("Ending stream")
+board.stop_stream()
+board.release_session()
+
 
 #We want to isolate just the eeg data
 eeg_channels = board.get_eeg_channels(board_id)
@@ -76,16 +69,46 @@ plt.show()
 
 #Filter data - apply to each channel separately 
 #filter to remove artifacts
-# for channel in range(eeg_data.shape[0]): # applied to all channels??
-#     DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
-#                                        FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
-#     DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
-#                                         FilterTypes.BUTTERWORTH, 0)
-# plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
-# plt.title("Filtered EEG Data")
-# plt.show()
-#plt.plot(x, y)
-#here using NumPy library to create array of basically timestamps for all the eeg data points we collect (horizontal axis)
+for channel in range(eeg_data.shape[0]): # applied to all channels??
+    DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
+                                       FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
+    DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
+                                        FilterTypes.BUTTERWORTH, 0)
+plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
+plt.title("Filtered EEG Data")
+plt.show()
+#here, plt.plot(np.arange = using NumPy library to create array of basically timestamps for all the eeg data points we collect (horizontal axis)
+
+
+for channel in range(eeg_data.shape[0]): # applied to all channels??
+    DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
+                                       FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
+    DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
+                                        FilterTypes.BUTTERWORTH, 0)
+plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
+plt.title("Filtered EEG Data")
+plt.show()
+
+for channel in range(eeg_data.shape[0]): # applied to all channels??
+    DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
+                                       FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
+    DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
+                                        FilterTypes.BUTTERWORTH, 0)
+plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
+plt.title("Filtered EEG Data")
+plt.show()
+
+for channel in range(eeg_data.shape[0]): # applied to all channels??
+    DataFilter.perform_lowpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 50.0, 5,
+                                       FilterTypes.BUTTERWORTH, 1) #BUTTERWORTH is a lowpass/highpass filter with low phase distortion (caused by data omission)
+    DataFilter.perform_highpass(eeg_data[channel], BoardShim.get_sampling_rate(board_id), 8.0, 4,
+                                        FilterTypes.BUTTERWORTH, 0)
+plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
+plt.title("Filtered EEG Data")
+plt.show()
+
+
+
 
 
 
@@ -114,95 +137,93 @@ plt.show()
 
 #-------------------------------------CHANNEL GRAPHS-----------------------
 
-for channel_idx in EEG_channels: #channel idx is indices for the different muse channels; channels 0-3 are the eeg channels
-    DataFilter.detrend(data[channel_idx], DetrendOperations.LINEAR.value)
-    psd0=DataFilter.get_psd_welch(data[channel_idx], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-    plt.plot(psd0[1][:60], psd0[0][:60])
-    plt.title(f"Channel {channel_idx}")
-    plt.show()
+# for channel_idx in EEG_channels: #channel idx is indices for the different muse channels; channels 0-3 are the eeg channels
+#     DataFilter.detrend(data[channel_idx], DetrendOperations.LINEAR.value)
+#     psd0=DataFilter.get_psd_welch(data[channel_idx], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+#     plt.plot(psd0[1][:60], psd0[0][:60])
+#     plt.title(f"Channel {channel_idx}")
+#     plt.show()
 
 
 
 
 
-# eeg_channel0=eeg_channels[0]
-# DataFilter.detrend(data[eeg_channel0], DetrendOperations.LINEAR.value)
-# psd0=DataFilter.get_psd_welch(data[eeg_channel0], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-# plt.plot(psd0[1][:60], psd0[0][:60])
-# plt.title("Channel 0")
-# plt.show()
+eeg_channel0=eeg_channels[0]
+DataFilter.detrend(data[eeg_channel0], DetrendOperations.LINEAR.value)
+psd0=DataFilter.get_psd_welch(data[eeg_channel0], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd0[1][:60], psd0[0][:60])
+plt.title("Channel 0")
+plt.show()
 
-# eeg_channel1=eeg_channels[1]
-# DataFilter.detrend(data[eeg_channel1], DetrendOperations.LINEAR.value)
-# psd1=DataFilter.get_psd_welch(data[eeg_channel1], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-# plt.plot(psd1[1][:60], psd1[0][:60])
-# plt.title("Channel 1")
-# plt.show()
+eeg_channel1=eeg_channels[1]
+DataFilter.detrend(data[eeg_channel1], DetrendOperations.LINEAR.value)
+psd1=DataFilter.get_psd_welch(data[eeg_channel1], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd1[1][:60], psd1[0][:60])
+plt.title("Channel 1")
+plt.show()
 
-# eeg_channel2=eeg_channels[2]
-# DataFilter.detrend(data[eeg_channel2], DetrendOperations.LINEAR.value)
-# psd2=DataFilter.get_psd_welch(data[eeg_channel2], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-# plt.plot(psd2[1][:60], psd2[0][:60])
-# plt.title("Channel 2")
-# plt.show()
+eeg_channel2=eeg_channels[2]
+DataFilter.detrend(data[eeg_channel2], DetrendOperations.LINEAR.value)
+psd2=DataFilter.get_psd_welch(data[eeg_channel2], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd2[1][:60], psd2[0][:60])
+plt.title("Channel 2")
+plt.show()
 
-# eeg_channel3=eeg_channels[3]
-# DataFilter.detrend(data[eeg_channel3], DetrendOperations.LINEAR.value)
-# psd3=DataFilter.get_psd_welch(data[eeg_channel3], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-# plt.plot(psd3[1][:60], psd3[0][:60])
-# plt.title("Channel 3")
-# plt.show()
-
-
-
-# delta=statistics.mean(
-#     DataFilter.get_band_power(psd1, 0.5, 4.0),
-#     DataFilter.get_band_power(psd2, 0.5, 4.0),
-#     DataFilter.get_band_power(psd3, 0.5, 4.0),
-#     DataFilter.get_band_power(psd4, 0.5, 4.0))
+eeg_channel3=eeg_channels[3]
+DataFilter.detrend(data[eeg_channel3], DetrendOperations.LINEAR.value)
+psd3=DataFilter.get_psd_welch(data[eeg_channel3], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd3[1][:60], psd3[0][:60])
+plt.title("Channel 3")
+plt.show()
 
 
 
-# theta= statistics.mean(    
-#     DataFilter.get_band_power(psd1, 4.0, 8.0),
-#     DataFilter.get_band_power(psd2, 4.0, 8.0),
-#     DataFilter.get_band_power(psd3, 4.0, 8.0),
-#     DataFilter.get_band_power(psd4, 4.0, 8.0))
+delta0=DataFilter.get_band_power(psd0, 0.5, 4.0)
+delta1=DataFilter.get_band_power(psd1, 0.5, 4.0)
+delta2=DataFilter.get_band_power(psd2, 0.5, 4.0)
+delta3=DataFilter.get_band_power(psd3, 0.5, 4.0)
+deltamean=statistics.mean([delta0, delta1, delta2, delta3])
 
 
 
+theta0=DataFilter.get_band_power(psd0, 4.0, 8.0)
+theta1=DataFilter.get_band_power(psd1, 4.0, 8.0)
+theta2=DataFilter.get_band_power(psd2, 4.0, 8.0)
+theta3=DataFilter.get_band_power(psd3, 4.0, 8.0)
+thetamean=statistics.mean([theta0, theta1, theta2, theta3])
 
-bands = {
-    "Delta": (0.5, 4.0),
-    "Theta": (4.0, 8.0),
-    "Alpha": (8.0, 13.0),
-    "Beta": (13.0, 30.0)
-}
-
-
-def get_bandpowers_for_channel(eeg_data, channel_idx, bands):
-    psd = DataFilter.get_psd(eeg_data[channel_idx], len(eeg_data[channel_idx]), 0)  # Compute PSD
-    bandpowers = {}
-    for band_name, (low, high) in bands.items():
-        bandpower = DataFilter.get_band_power(psd, low, high)
-        bandpowers[band_name] = bandpower
-    return bandpowers
-
-channel_bandpowers = {}
-for channel_idx in EEG_channels:
-    bandpowers = get_bandpowers_for_channel(eeg_data, channel_idx, bands)
-    channel_bandpowers[channel_idx] = bandpowers
-
-average_bandpowers = {band_name: 0.0 for band_name in bands}
-
-for band_name in bands:
-    total_bandpower = 0
-    for channel_idx in EEG_channels:
-        total_bandpower += channel_bandpowers[channel_idx][band_name]
-    average_bandpowers[band_name] = total_bandpower / len(EEG_channels)
+print("Delta:Theta Ratio is: %f" %(deltamean/thetamean))
 
 
-print("Delta:Theta Ratio is: %f" %((average_bandpowers[bands.Delta])/(average_bandpowers[bands.Theta])))
+# bands = {
+#     "Delta": (0.5, 4.0),
+#     "Theta": (4.0, 8.0),
+#     "Alpha": (8.0, 13.0),
+#     "Beta": (13.0, 30.0)
+# }
+
+
+# def get_bandpowers_for_channel(eeg_data, channel_idx, bands):
+#     psd = DataFilter.get_psd(eeg_data[channel_idx], len(eeg_data[channel_idx]), 0)  # Compute PSD
+#     bandpowers = {}
+#     for band_name, (low, high) in bands.items():
+#         bandpower = DataFilter.get_band_power(psd, low, high)
+#         bandpowers[band_name] = bandpower
+#     return bandpowers
+
+# channel_bandpowers = {}
+# for channel_idx in EEG_channels:
+#     bandpowers = get_bandpowers_for_channel(eeg_data, channel_idx, bands)
+#     channel_bandpowers[channel_idx] = bandpowers
+
+# average_bandpowers = {band_name: 0.0 for band_name in bands}
+
+# for band_name in bands:
+#     total_bandpower = 0
+#     for channel_idx in EEG_channels:
+#         total_bandpower += channel_bandpowers[channel_idx][band_name]
+#     average_bandpowers[band_name] = total_bandpower / len(EEG_channels)
+
 
 
 
