@@ -61,10 +61,7 @@ for channel in eeg_data:
     frequencies = np.fft.fftfreq(len(fft_result), 1 / sampling_rate)
     fft_list.append(frequencies)
 
-
-
 # Plot the frequency spectrum
-plt.plot(positive_freqs, positive_magnitude)
 plt.title("Frequency Spectrum of EEG Data (TP9)")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("Magnitude")
