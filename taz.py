@@ -1,6 +1,7 @@
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
-from brainflow.data_filter import DataFilter, FilterTypes
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, LogLevels, BoardIds
+from brainflow.data_filter import DataFilter, FilterTypes, AggOperations, WindowOperations, DetrendOperations
 import numpy as np
+from scipy.signal import detrend
 from nfft import nfft
 import matplotlib.pyplot as plt
 import time
@@ -106,7 +107,7 @@ plt.show()
 
 eeg_channel=eeg_channels[1]
 
-DataFilter.detrend(data(eeg_channel), DetrendOperation.LINEAR.value)
+DataFilter.detrend(data[eeg_channel], DetrendOperations.LINEAR.value)
 psd=DataFilter.get_psd_welch(data[eeg_channel], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
 
 plt.plot(psd[1][:60], psd[0][:60])
