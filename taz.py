@@ -8,38 +8,40 @@ params = BrainFlowInputParams()
 params.serial_port = 'COM6' #Change this depending on your device and OS
 board_id = 38 #Change this depending on your device
 
-#Prepares the board for reading data
-try:
-    board_id = 38
-    board = BoardShim(board_id, params)
-    board.prepare_session()
-    print("Successfully prepared physical board.")
-except Exception as e:
-    print(e)
-    #If the device cannot be found or is being used elsewhere, creates a synthetic board instead
-    print("Device could not be found or is being used by another program, creating synthetic board.")
-    board_id = BoardIds.SYNTHETIC_BOARD
-    board = BoardShim(board_id, params)
-    board.prepare_session()
-#Releases the board session
-board.release_session()
+# #Prepares the board for reading data
+# try:
+#     board_id = 38
+#     board = BoardShim(board_id, params)
+#     board.prepare_session()
+#     print("Successfully prepared physical board.")
+# except Exception as e:
+#     print(e)
+#     #If the device cannot be found or is being used elsewhere, creates a synthetic board instead
+#     print("Device could not be found or is being used by another program, creating synthetic board.")
+#     board_id = BoardIds.SYNTHETIC_BOARD
+#     board = BoardShim(board_id, params)
+#     board.prepare_session()
+# #Releases the board session
+# board.release_session()
 
 #------------------------------------------ GET DATA ---------------------------------------------------
 
-#read data
-print("Starting Stream")
-board.prepare_session()
-board.start_stream()
-time.sleep(5) #wait 5 seconds
-data = board.get_board_data() #gets all data from board and removes it from internal buffer
-print("Ending stream")
-board.stop_stream()
-board.release_session()
+# #read data
+# print("Starting Stream")
+# board.prepare_session()
+# board.start_stream()
+# time.sleep(5) #wait 5 seconds
+# data = board.get_board_data() #gets all data from board and removes it from internal buffer
+# print("Ending stream")
+# board.stop_stream()
+# board.release_session()
 
-#We want to isolate just the eeg data
-eeg_channels = board.get_eeg_channels(board_id)
-eeg_data = data[eeg_channels]
-#print(eeg_data.shape)
+# #We want to isolate just the eeg data
+# eeg_channels = board.get_eeg_channels(board_id)
+# eeg_data = data[eeg_channels]
+# #print(eeg_data.shape)
+
+eeg_data = DataFilter.read_file('eeg_data_test_4.csv') #Reads file back
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
 
