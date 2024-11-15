@@ -27,8 +27,8 @@ gamma = (30, 100)
 brain_wave_readings = {delta:0, theta:0, alpha:0, beta:0, gamma:0} #brain wave readings
 
 params = BrainFlowInputParams()
-params.serial_port = 'COM5' #Change this depending on your device and OS
-board_id = -1 #Change this depending on your device
+params.serial_port = 'COM6' #Change this depending on your device and OS
+board_id = 38 #Change this depending on your device
 
 #Prepares the board for reading data
 
@@ -48,12 +48,12 @@ except Exception as e:
 """
 
 params = BrainFlowInputParams()
-params.mac_address = 'XX:XX:XX:XX:XX:XX'  # Replace with your Muse 2 MAC address
 
 board = BoardShim(BoardIds.MUSE_2_BOARD.value, params)
 board.prepare_session()
 
 board.start_stream()
+time.sleep(5)
 
 data = board.get_board_data()
 

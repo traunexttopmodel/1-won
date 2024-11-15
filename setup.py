@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import time
 
 params = BrainFlowInputParams()
-params.serial_port = 'COM5' #Change this depending on your device and OS
+params.serial_port = 'COM6' #Change this depending on your device and OS
 board_id = 38 #Change this depending on your device
 
 #Prepares the board for reading data
