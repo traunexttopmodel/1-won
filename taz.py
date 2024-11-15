@@ -40,24 +40,26 @@ board.release_session()
 #------------------------------------------ GET DATA ---------------------------------------------------
 
 #read data
-print("Starting Stream")
-board.prepare_session()
-board.start_stream()
-time.sleep(5) #wait 5 seconds
-data = board.get_board_data() #gets all data from board and removes it from internal buffer
-print("Ending stream")
-board.stop_stream()
-board.release_session()
+# print("Starting Stream")
+# board.prepare_session()
+# board.start_stream()
+# time.sleep(5) #wait 5 seconds
+# data = board.get_board_data() #gets all data from board and removes it from internal buffer
+data = DataFilter.read_file('eeg_data_test_6.csv') #Reads file back
+board_id = 38
+# print("Ending stream")
+# board.stop_stream()
+# board.release_session()
 
 #We want to isolate just the eeg data
-eeg_channels = board.get_eeg_channels(board_id)
-eeg_data = data[eeg_channels]
+eeg_channels = BoardShim.get_eeg_channels(board_id)
+# eeg_data = data[eeg_channels]
 #print(eeg_data.shape)
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
 
 #Plot the **first** EEG channel
-plt.plot(np.arange(eeg_data.shape[1]), eeg_data[0])
+plt.plot(np.arange(data.shape[1]), data[0])
 plt.title("Raw EEG Data")
 plt.xlabel("Sample")
 plt.ylabel("Amplitude")
@@ -147,7 +149,7 @@ gamma_band = (35, 100)
 
 # Perform FFT
 sampling_rate = BoardShim.get_sampling_rate(board_id)
-fft_result = np.fft.fft(eeg_data)
+fft_result = np.fft.fft(data)
 frequencies = np.fft.fftfreq(len(fft_result), d=1/sampling_rate)
 magnitude = np.abs(fft_result)
 
