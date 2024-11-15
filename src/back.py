@@ -17,8 +17,6 @@ from brainflow.data_filter import DataFilter, FilterTypes
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 # brain wave ranges (in Hz) - (start, end)
 delta = (0.5, 4)
 theta = (4, 8)
@@ -33,9 +31,6 @@ params.serial_port = 'COM6' #Change this depending on your device and OS
 board_id = 38 #Change this depending on your device
 
 #Prepares the board for reading data
-
-params = BrainFlowInputParams()
-
 board = BoardShim(BoardIds.MUSE_2_BOARD.value, params)
 board.prepare_session()
 
