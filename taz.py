@@ -28,27 +28,31 @@ except Exception as e:
     board_id = BoardIds.SYNTHETIC_BOARD
     board = BoardShim(board_id, params)
     board.prepare_session()
+
+nfft = DataFilter.get_nearest_power_of_two(sampling_rate)
+
 #Releases the board session
 board.release_session()
 
+
+
+
 #------------------------------------------ GET DATA ---------------------------------------------------
 
-# #read data
-# print("Starting Stream")
-# board.prepare_session()
-# board.start_stream()
-# time.sleep(5) #wait 5 seconds
-# data = board.get_board_data() #gets all data from board and removes it from internal buffer
-# print("Ending stream")
-# board.stop_stream()
-# board.release_session()
+#read data
+print("Starting Stream")
+board.prepare_session()
+board.start_stream()
+time.sleep(5) #wait 5 seconds
+data = board.get_board_data() #gets all data from board and removes it from internal buffer
+print("Ending stream")
+board.stop_stream()
+board.release_session()
 
-# #We want to isolate just the eeg data
-# eeg_channels = board.get_eeg_channels(board_id)
-# eeg_data = data[eeg_channels]
-# #print(eeg_data.shape)
-
-eeg_data = DataFilter.read_file('eeg_data_test_4.csv') #Reads file back
+#We want to isolate just the eeg data
+eeg_channels = board.get_eeg_channels(board_id)
+eeg_data = data[eeg_channels]
+#print(eeg_data.shape)
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
 
@@ -100,18 +104,40 @@ plt.show()
 #beta()
 
 
+#-------------------------------------CHANNEL GRAPHS-----------------------
 
-eeg_channel=eeg_channels[1]
 
-DataFilter.detrend(data[eeg_channel], DetrendOperations.LINEAR.value)
-psd=DataFilter.get_psd_welch(data[eeg_channel], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
-
+eeg_channel1=eeg_channels[1]
+DataFilter.detrend(data[eeg_channel1], DetrendOperations.LINEAR.value)
+psd=DataFilter.get_psd_welch(data[eeg_channel1], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
 plt.plot(psd[1][:60], psd[0][:60])
+plt.title("Channel 1")
+plt.show()
+
+eeg_channel2=eeg_channels[2]
+DataFilter.detrend(data[eeg_channel2], DetrendOperations.LINEAR.value)
+psd=DataFilter.get_psd_welch(data[eeg_channel2], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd[1][:60], psd[0][:60])
+plt.title("Channel 2")
+plt.show()
+
+eeg_channel3=eeg_channels[3]
+DataFilter.detrend(data[eeg_channel3], DetrendOperations.LINEAR.value)
+psd=DataFilter.get_psd_welch(data[eeg_channel3], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd[1][:60], psd[0][:60])
+plt.title("Channel 3")
+plt.show()
+
+eeg_channel4=eeg_channels[4]
+DataFilter.detrend(data[eeg_channel4], DetrendOperations.LINEAR.value)
+psd=DataFilter.get_psd_welch(data[eeg_channel4], nfft, nfft//2, sampling_rate, WindowOperations.HANNING.value)
+plt.plot(psd[1][:60], psd[0][:60])
+plt.title("Channel 4")
 plt.show()
 
 delta= DataFilter.get_band_power(psd, 0.5, 4.0)
 theta= DataFilter.get_band_power(psd, 4.0, 8.0)
-print("Delta:Theta Ratio is:" %(delta/theta))
+print("Delta:Theta Ratio is: %f" %(delta/theta))
 
 
 # Brainwave Type frequency bands
