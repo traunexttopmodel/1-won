@@ -28,31 +28,27 @@ except Exception as e:
     board_id = BoardIds.SYNTHETIC_BOARD
     board = BoardShim(board_id, params)
     board.prepare_session()
-
-nfft = DataFilter.get_nearest_power_of_two(sampling_rate)
-
 #Releases the board session
 board.release_session()
 
-
-
-
 #------------------------------------------ GET DATA ---------------------------------------------------
 
-#read data
-print("Starting Stream")
-board.prepare_session()
-board.start_stream()
-time.sleep(5) #wait 5 seconds
-data = board.get_board_data() #gets all data from board and removes it from internal buffer
-print("Ending stream")
-board.stop_stream()
-board.release_session()
+# #read data
+# print("Starting Stream")
+# board.prepare_session()
+# board.start_stream()
+# time.sleep(5) #wait 5 seconds
+# data = board.get_board_data() #gets all data from board and removes it from internal buffer
+# print("Ending stream")
+# board.stop_stream()
+# board.release_session()
 
-#We want to isolate just the eeg data
-eeg_channels = board.get_eeg_channels(board_id)
-eeg_data = data[eeg_channels]
-#print(eeg_data.shape)
+# #We want to isolate just the eeg data
+# eeg_channels = board.get_eeg_channels(board_id)
+# eeg_data = data[eeg_channels]
+# #print(eeg_data.shape)
+
+eeg_data = DataFilter.read_file('eeg_data_test_4.csv') #Reads file back
 
 #------------------------------------------ PREPROCESS DATA ---------------------------------------------------
 
