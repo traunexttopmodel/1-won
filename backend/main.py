@@ -2,40 +2,71 @@ from loadRawData import*
 from preprocessData import*
 from processData import*
 
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
+from brainflow.data_filter import DataFilter
+import time
+import os
+
 def main():
+    # Setup
+    params = BrainFlowInputParams()
+    params.serial_port = 'COM6'
+    board_id = 38
 
-    #hardcoding for simplicty right now, could code again to dynamic later
-    #--------------------------------------------------------------------------------
-    # LOADING RAW EEG DATA                                                           |
-    #--------------------------------------------------------------------------------
-    loadRawDataOption = 1 #0 if live stream, 1 if load from CSV file
-    filename = 'backend/eeg_data_test_1.csv' 
+    #----------------------- TEST CONNECTION FOR READING DATA ----------------------
+    try:
+        board_id = 38
+        board = BoardShim(board_id, params)
+        board.prepare_session()
+        print("Successfully prepared physical board.")
 
-    if (loadRawDataOption == 0): #live stream
-        eeg_channels, eeg_data = loadRawData()
-    else: #csv fle
-        eeg_channels, eeg_data = loadRawData(filename)
+        # #Releases the board session
+        # board.release_session()
 
-    eeg_channels = [c-1 for c in eeg_channels] #readjust channel index
+    except Exception as e:
+        print(e)
+        #If the device cannot be found or is being used elsewhere, creates a synthetic board instead
+        print("Device could not be found or is being used by another program, creating synthetic board.")
+        board_id = BoardIds.SYNTHETIC_BOARD
+        board = BoardShim(board_id, params)
+        board.prepare_session()
 
-    #--------------------------------------------------------------------------------
-    # SAVE RAW EEG DATASET IF WANT TO                                                |
-    #--------------------------------------------------------------------------------
-    saveEegData = 0 #0 if not, 1 if yes
-
-    if (saveEegData == 1):
-        DataFilter.write_file(eeg_data, 'backend/eeg_data_test.csv', 'w') #Writes into a csv file in the current directory
+        # #Releases the board session
+        # board.release_session()
     
-    #--------------------------------------------------------------------------------
-    # PREPROCESS DATA - FILTERING                                                    |
-    #--------------------------------------------------------------------------------
-    eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
+    #----------------------- START STREAM ----------------------
+    try:
+        # Start the EEG data stream
+        board.start_stream()
+        print("Streaming data...")
+        
+        # Infinite loop to collect data every 5 seconds
+        while True:
+            time.sleep(5)  # Wait for 5 seconds
+            data = board.get_board_data()  # Retrieve the latest data and remove it from the buffer
+            
+            #We want to isolate just the eeg data
+            eeg_channels = board.get_eeg_channels(board_id)
+            eeg_channels = [c-1 for c in eeg_channels] #readjust channel index
+            eeg_data = data[eeg_channels]
 
-    #--------------------------------------------------------------------------------
-    # PROCESS DATA - PLOT PSD, FIND BANDPOWER & FIND DOMINANT WAVE                                 |
-    #--------------------------------------------------------------------------------
-    dominateWave = processData(eeg_channels, eeg_data)
-    print("The dominant wave is: " + dominateWave)
+            #Preprocess data
+            eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
+
+            dominateWave = processData(eeg_channels, eeg_data)
+            print("The dominant wave is: " + dominateWave)
+            if (dominateWave == "Delta"):
+                print("Mild fatigue detected")
+            elif (dominateWave == "Theta"):
+                print("Severe fatigue detected")
+            
+
+    except KeyboardInterrupt:
+        print("Stopping the stream...")
+    finally:
+        # Release resources
+        board.stop_stream()
+        board.release_session()
 
 if __name__ == "__main__":
    main()

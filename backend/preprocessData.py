@@ -26,7 +26,8 @@ def preprocessData(eeg_channels, eeg_data):
                                     2 #ripple
                                     )
         
-        # Filtering the spike at 0Hz
+        
+        # Filtering the spike at 0Hz - should not
         DataFilter.perform_bandstop(
                                     eeg_data[eeg_channel], #data
                                     sampling_rate, #sampling rate
