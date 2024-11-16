@@ -5,7 +5,6 @@ from processData import*
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter
 import time
-import os
 
 def main():
     # Setup
@@ -42,8 +41,9 @@ def main():
         
         # Infinite loop to collect data every 5 seconds
         while True:
-            time.sleep(5)  # Wait for 5 seconds
-            data = board.get_board_data()  # Retrieve the latest data and remove it from the buffer
+            time.sleep(10)  # Wait for 5 seconds
+            data = board.get_current_board_data(150)
+            #print(data.shape)
             
             #We want to isolate just the eeg data
             eeg_channels = board.get_eeg_channels(board_id)
@@ -53,12 +53,15 @@ def main():
             #Preprocess data
             eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
 
-            dominateWave = processData(eeg_channels, eeg_data)
+            dominateWave, thetaBetaRatio = processData(eeg_channels, eeg_data)
             print("The dominant wave is: " + dominateWave)
-            if (dominateWave == "Delta"):
-                print("Mild fatigue detected")
+            print("Theta/Beta ratio is: %f" %thetaBetaRatio)
+            if (dominateWave == "Alpha" and thetaBetaRatio > 1):
+                print("Fatigue detected")
             elif (dominateWave == "Theta"):
-                print("Severe fatigue detected")
+                print("Fatigue detected")
+            elif (dominateWave == "Delta"):
+                print("Likely not conscious")
             
 
     except KeyboardInterrupt:
