@@ -59,6 +59,6 @@ for eeg_channel in eeg_channels:
     plt.show()
 
 # calc band power
-# delta = DataFilter.get_band_power(psd, 0.5,4.0)
-# theta = DataFilter.get_band_power(psd, 4.0,8.0)
-# print("Delta/Theta Ratio is: %f" %(delta / theta))
+delta = DataFilter.get_band_power(psd, 0.5,4.0)
+theta = DataFilter.get_band_power(psd, 4.0,8.0)
+print("Delta/Theta Ratio is: %f" %(delta / theta))

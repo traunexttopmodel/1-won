@@ -6,7 +6,7 @@ def main():
 
     #hardcoding for simplicty right now, could code again to dynamic later
     #--------------------------------------------------------------------------------
-    # LOADING RAW EEG DATA
+    # LOADING RAW EEG DATA                                                           |
     #--------------------------------------------------------------------------------
     loadRawDataOption = 1 #0 if live stream, 1 if load from CSV file
     filename = 'eeg_data_test_1.csv' 
@@ -19,7 +19,7 @@ def main():
     eeg_channels = [c-1 for c in eeg_channels] #readjust channel index
 
     #--------------------------------------------------------------------------------
-    # SAVE RAW EEG DATASET IF WANT TO
+    # SAVE RAW EEG DATASET IF WANT TO                                                |
     #--------------------------------------------------------------------------------
     saveEegData = 0 #0 if not, 1 if yes
 
@@ -27,12 +27,12 @@ def main():
         DataFilter.write_file(eeg_data, 'eeg_data_test.csv', 'w') #Writes into a csv file in the current directory
     
     #--------------------------------------------------------------------------------
-    # PREPROCESS DATA - FILTERING
+    # PREPROCESS DATA - FILTERING                                                    |
     #--------------------------------------------------------------------------------
     eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
 
     #--------------------------------------------------------------------------------
-    # PROCESS DATA - PLOT PSD & FIND BANDPOWER
+    # PROCESS DATA - PLOT PSD & FIND BANDPOWER                                       |
     #--------------------------------------------------------------------------------
     processData(eeg_channels, eeg_data)
 
