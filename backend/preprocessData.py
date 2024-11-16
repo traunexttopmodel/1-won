@@ -16,7 +16,7 @@ def preprocessData(eeg_channels, eeg_data):
     
 
     for eeg_channel in eeg_channels:
-        # # Filtering the spike around 0Hz - but try limiting to a small portion
+        # Filtering the spike around 0Hz - but try limiting to a small portion
         DataFilter.perform_bandstop(
                                     eeg_data[eeg_channel], #data
                                     sampling_rate, #sampling rate

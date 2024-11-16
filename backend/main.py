@@ -1,6 +1,7 @@
 from loadRawData import*
 from preprocessData import*
 from processData import*
+from loggingData import*
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter
@@ -11,6 +12,7 @@ def main():
     params = BrainFlowInputParams()
     params.serial_port = 'COM6'
     board_id = 38
+    warningLog = []
 
     #----------------------- TEST CONNECTION FOR READING DATA ----------------------
     try:
@@ -41,7 +43,7 @@ def main():
         
         # Infinite loop to collect data every 5 seconds
         while True:
-            time.sleep(10)  # Wait for 5 seconds
+            time.sleep(5)  # Wait for 5 seconds
             data = board.get_current_board_data(150)
             #print(data.shape)
             
@@ -53,15 +55,23 @@ def main():
             #Preprocess data
             eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
 
-            dominateWave, thetaBetaRatio = processData(eeg_channels, eeg_data)
+            dominateWave, thetaBetaRatio, thetaAlphaRatio = processData(eeg_channels, eeg_data)
             print("The dominant wave is: " + dominateWave)
             print("Theta/Beta ratio is: %f" %thetaBetaRatio)
-            if (dominateWave == "Alpha" and thetaBetaRatio > 1):
-                print("Fatigue detected")
-            elif (dominateWave == "Theta"):
-                print("Fatigue detected")
-            elif (dominateWave == "Delta"):
-                print("Likely not conscious")
+            print("Theta/Alpha ratio is: %f" %thetaAlphaRatio)
+            
+            warningLog, warning = loggingData(warningLog, dominateWave, thetaBetaRatio, thetaAlphaRatio)
+            print(warningLog)
+            if (warning == 1):
+                print("Fatigue detected, please take a rest!")
+            elif (warning == 2):
+                print("Severe fatigue detected, please rest!")
+            
+            # joke
+            if (dominateWave == 'Delta'):
+                print("call the doctor right now")
+            
+            print("")
             
 
     except KeyboardInterrupt:
