@@ -31,7 +31,7 @@ def preprocessData(eeg_channels, eeg_data):
                                     eeg_data[eeg_channel], #data
                                     sampling_rate, #sampling rate
                                     0, #start freq
-                                    5, #end freq
+                                    10, #end freq
                                     1, #order
                                     FilterTypes.BUTTERWORTH, #filter type
                                     2 #ripple

@@ -9,7 +9,7 @@ def main():
     # LOADING RAW EEG DATA                                                           |
     #--------------------------------------------------------------------------------
     loadRawDataOption = 1 #0 if live stream, 1 if load from CSV file
-    filename = 'eeg_data_test_1.csv' 
+    filename = 'backend/eeg_data_test_1.csv' 
 
     if (loadRawDataOption == 0): #live stream
         eeg_channels, eeg_data = loadRawData()
@@ -24,7 +24,7 @@ def main():
     saveEegData = 0 #0 if not, 1 if yes
 
     if (saveEegData == 1):
-        DataFilter.write_file(eeg_data, 'eeg_data_test.csv', 'w') #Writes into a csv file in the current directory
+        DataFilter.write_file(eeg_data, 'backend/eeg_data_test.csv', 'w') #Writes into a csv file in the current directory
     
     #--------------------------------------------------------------------------------
     # PREPROCESS DATA - FILTERING                                                    |
@@ -32,9 +32,10 @@ def main():
     eeg_channels, eeg_data = preprocessData(eeg_channels, eeg_data)
 
     #--------------------------------------------------------------------------------
-    # PROCESS DATA - PLOT PSD & FIND BANDPOWER                                       |
+    # PROCESS DATA - PLOT PSD, FIND BANDPOWER & FIND DOMINANT WAVE                                 |
     #--------------------------------------------------------------------------------
-    processData(eeg_channels, eeg_data)
+    dominateWave = processData(eeg_channels, eeg_data)
+    print("The dominant wave is: " + dominateWave)
 
 if __name__ == "__main__":
    main()

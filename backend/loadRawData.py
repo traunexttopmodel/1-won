@@ -8,6 +8,7 @@
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter
 import time
+import os
 
 def loadRawData(filename=None):
 
@@ -51,8 +52,11 @@ def loadRawData(filename=None):
 
     #----------------------- 2) COLLECT DATA FROM CSV FILE ----------------------
     else:
-        eeg_channels = BoardShim.get_eeg_channels(board_id)
-        eeg_data = DataFilter.read_file(filename) #reads file back
+        if not os.path.exists(filename):
+            raise FileNotFoundError(f"The file {filename} does not exist.")
+        else:
+            eeg_channels = BoardShim.get_eeg_channels(board_id)
+            eeg_data = DataFilter.read_file(filename) #reads file back
 
     #----------------------- RETURN DATASET ----------------------
     return eeg_channels, eeg_data

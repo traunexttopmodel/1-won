@@ -33,7 +33,7 @@ def processData(eeg_channels, eeg_data):
         psd = DataFilter.get_psd_welch(eeg_data[eeg_channel], nfft, nfft // 2, sampling_rate, WindowOperations.HANNING.value)
         
         # Plot PSD of that channel
-        plt.plot(psd[1][:60], psd[0][:60])
+        plt.plot(psd[1][:50], psd[0][:50])
         plt.show()
 
         # Sum up bandpower of each brain wave
