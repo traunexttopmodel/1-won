@@ -1,6 +1,10 @@
 #--------------------------------------------------------------------------------
-# SUMMARY: This function filters out the highs (~60Hz and ~0Hz spike) in EACH channel
-#          and return cleaner EEG channels
+# SUMMARY: This function filters:
+#          - Powerline noise at 60Hz
+#          - Blinking noise (2 - 3Hz) - " The filter of this inhibit band was set at 2–3 Hz for eyeblinks and above 60 Hz for muscle artifacts."
+#                                         https://pmc.ncbi.nlm.nih.gov/articles/PMC7391399/
+#          - The initial spike (0 - 0.5Hz, try not to filter too much of Delta frequency (0.4 - 4Hz))
+#          - A final filter to reduce general noise
 #--------------------------------------------------------------------------------
 
 from brainflow.board_shim import BoardShim
@@ -33,6 +37,17 @@ def preprocessData(eeg_channels, eeg_data):
                                     sampling_rate, #sampling rate
                                     55, #start freq
                                     65, #end freq
+                                    1, #order
+                                    FilterTypes.BUTTERWORTH, #filter type
+                                    2 #ripple
+                                    )
+        
+        # Filtering out blinking noise
+        DataFilter.perform_bandstop(
+                                    eeg_data[eeg_channel], #data
+                                    sampling_rate, #sampling rate
+                                    2, #start freq
+                                    3, #end freq
                                     1, #order
                                     FilterTypes.BUTTERWORTH, #filter type
                                     2 #ripple

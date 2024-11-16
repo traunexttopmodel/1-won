@@ -1,11 +1,22 @@
 #--------------------------------------------------------------------------------
 # SUMMARY: This function process the data by:
 #          1) finding the Power Spectral Density (PSD) of each channel - shows the power of the signal in each frequency,
-#          2) plot it,
-#          3) find the average bandpower (amount of activity in a frequency range) of each type of waves throughout the 4 channels,
-#          4) find relative bandpowers to total bandpower,
-#          5) and identify the dominant brain wave (Gamma, Beta, Alpha, Theta, Delta)
-#          It returns the string of the dominant brain wave
+#          2) smooth it out using Gaussian smoothing to reduce glitches and imitate analog data
+#          3) find the average bandpower (amount of activity in a frequency range) of each type of waves
+#             throughout channels 1, 2 and 3 (exlcuding channel 0),
+#          4) find the Theta/Beta, Alpha/Theta ratio and return
+#           
+# NOTES: 
+#          * The commented out portion of the program can be uncommented to see the 
+#            smoothed graphs and dominant brainwave 
+#
+#          * Theta/Beta and Alpha/Theta ratios were chosen to allow simplified categorization of 
+#            mild and severe warning, as relative bandpowers often result in Delta/Theta as the dominant brainwave 
+#            and does not allow for data nuances -
+#            (dominating Delta/Theta does not automatically equate to fatigue, 
+#            eg. a mildly tired person could have strong Beta/Alpha brainwaves but still stronger Theta signals.
+#            Therefore, must compare in relative to other bandpowers to gain a more accurate diagnosis).
+#            An example of studies using Theta/Beta Ratio: https://pmc.ncbi.nlm.nih.gov/articles/PMC7391399/
 #--------------------------------------------------------------------------------
 
 import brainflow
@@ -26,8 +37,8 @@ def processData(eeg_channels, eeg_data):
     delta = theta = alpha = beta = gamma = total = 0
     psd_threshold = 20000
 
-    psd_list = []
-    smoothed_psd_list = []
+    # psd_list = []
+    # smoothed_psd_list = []
 
     for eeg_channel in range(1,len(eeg_channels)):
         # Find PSD of channel
@@ -35,9 +46,9 @@ def processData(eeg_channels, eeg_data):
         psd = filter_high_psd(psd, psd_threshold)
         smoothed_psd = smooth_psd(psd, sigma=3)
 
-        # Save for plotting
-        psd_list.append(psd)
-        smoothed_psd_list.append(smoothed_psd)
+        # # Save for plotting
+        # psd_list.append(psd)
+        # smoothed_psd_list.append(smoothed_psd)
 
         # Ensure that the frequency ranges are valid for your PSD data
         try:
@@ -61,24 +72,26 @@ def processData(eeg_channels, eeg_data):
     total = total/4
 
     # Find relative bandpower of each
-    relativeDelta = delta/total
-    relativeTheta = theta/total
-    relativeAlpha = alpha/total
-    relativeBeta = beta/total
-    relativeGamma = gamma/total
-    relativeBandpowers = [relativeDelta, relativeTheta, relativeAlpha, relativeBeta, relativeGamma]
+    # relativeDelta = delta/total
+    # relativeTheta = theta/total
+    # relativeAlpha = alpha/total
+    # relativeBeta = beta/total
+    # relativeGamma = gamma/total
+    # relativeBandpowers = [relativeDelta, relativeTheta, relativeAlpha, relativeBeta, relativeGamma]
     #print(relativeBandpowers)
 
     thetaBetaRatio = theta/beta
-    thetaAlphaRatio = theta/alpha
+    alphaThetaRation = alpha/theta
 
     # Find dominant brain wave (highest relative bandpower) & return
-    highestRelativeBandpower = max(relativeBandpowers)
-    if (highestRelativeBandpower == relativeDelta): return "Delta", thetaBetaRatio, thetaAlphaRatio
-    if (highestRelativeBandpower == relativeTheta): return "Theta", thetaBetaRatio, thetaAlphaRatio
-    if (highestRelativeBandpower == relativeAlpha): return "Alpha", thetaBetaRatio, thetaAlphaRatio
-    if (highestRelativeBandpower == relativeBeta): return "Beta", thetaBetaRatio, thetaAlphaRatio
-    if (highestRelativeBandpower == relativeGamma): return "Gamma", thetaBetaRatio, thetaAlphaRatio
+    # highestRelativeBandpower = max(relativeBandpowers)
+    # if (highestRelativeBandpower == relativeDelta): return "Delta", thetaBetaRatio, thetaAlphaRatio
+    # if (highestRelativeBandpower == relativeTheta): return "Theta", thetaBetaRatio, thetaAlphaRatio
+    # if (highestRelativeBandpower == relativeAlpha): return "Alpha", thetaBetaRatio, thetaAlphaRatio
+    # if (highestRelativeBandpower == relativeBeta): return "Beta", thetaBetaRatio, thetaAlphaRatio
+    # if (highestRelativeBandpower == relativeGamma): return "Gamma", thetaBetaRatio, thetaAlphaRatio
+
+    return thetaBetaRatio, alphaThetaRation
 
 
 
@@ -87,16 +100,7 @@ def processData(eeg_channels, eeg_data):
 
 
 def smooth_psd(psd, sigma=2):
-    """
-    Apply Gaussian smoothing to the PSD data.
-    
-    Args:
-        psd (tuple): A tuple containing the PSD power values and corresponding frequency bins.
-        sigma (float): The standard deviation for the Gaussian filter (controls smoothing).
-        
-    Returns:
-        smoothed_psd (numpy array): The smoothed PSD data.
-    """
+
     # Extract PSD values and frequencies from the input tuple
     psd_values = psd[0]
     frequencies = psd[1]
@@ -111,16 +115,7 @@ def smooth_psd(psd, sigma=2):
 
 
 def filter_high_psd(psd, threshold):
-    """
-    Filters out high PSD values above a specified threshold.
 
-    Args:
-        psd_values (numpy array): Array of PSD values.
-        threshold (float): The maximum allowable PSD value.
-
-    Returns:
-        numpy array: Filtered PSD values.
-    """ 
     psd_values = psd[0]
     frequency = psd[1]
 
@@ -131,14 +126,7 @@ def filter_high_psd(psd, threshold):
 
 
 def plot_psd_comparison(eeg_channels, psd_list, smoothed_psd_list):
-    """
-    Plot the original and smoothed PSDs for all EEG channels in a single window.
     
-    Args:
-        eeg_channels (list): List of EEG channel indices.
-        psd_list (list): List of original PSD tuples for each channel.
-        smoothed_psd_list (list): List of smoothed PSD tuples for each channel.
-    """
     num_channels = len(eeg_channels)
     fig, axs = plt.subplots(1, num_channels, figsize=(15, 5), sharey=True)
     
