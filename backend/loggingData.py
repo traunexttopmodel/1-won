@@ -23,9 +23,10 @@ def loggingData(warningLog, thetaBetaRatio, alphaThetaRation):
             warning = 2 #big chime
         else:
             warning = 1 #small chime
+        warningLog = [] #reset the warning to prevent repetitive warning
 
     # Log it
-    if(len(warningLog) < 10):
+    if(len(warningLog) < 11):
         warningLog.append(warning)
         return warningLog, 0 #not enough data to evaluate general fatigue level yet
     
