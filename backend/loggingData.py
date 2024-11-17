@@ -23,7 +23,6 @@ def loggingData(warningLog, thetaBetaRatio, alphaThetaRation):
             warning = 2 #big chime
         else:
             warning = 1 #small chime
-        warningLog = [] #reset the warning to prevent repetitive warning
 
     # Log it
     if(len(warningLog) < 11):
@@ -34,4 +33,8 @@ def loggingData(warningLog, thetaBetaRatio, alphaThetaRation):
         warningLog = warningLog[1:] # Remove first element (oldest data)
         warningLog.append(warning)
 
-        return warningLog, statistics.median(warningLog)
+        overallWarning = statistics.median(warningLog)
+        if (overallWarning > 0):
+            warningLog = [] #reset the warning to prevent repetitive warning
+
+        return warningLog, overallWarning
