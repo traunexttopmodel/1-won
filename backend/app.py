@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_socketio import SocketIO
 from preprocessData import *
 from processData import *
 from loggingData import loggingData
@@ -8,6 +9,7 @@ import time
 import threading
 
 app = Flask(__name__)
+socketio = SocketIO(app)  # Initialize SocketIO
 
 # Global variables to store the current warning state and log
 current_warning = 0
@@ -58,6 +60,9 @@ def brain_wave_monitor():
             warning_log, warning = loggingData(warning_log, theta_beta_ratio, alpha_theta_ratio)
             current_warning = warning  # Update the global warning state
 
+            # Emit the warning state to all connected clients
+            socketio.emit('update_warning', {'warning': current_warning, 'log': warning_log})
+
     except KeyboardInterrupt:
         print("Stopping the stream...")
     finally:
@@ -77,4 +82,4 @@ if __name__ == '__main__':
     monitor_thread.start()
 
     # Run the Flask server
-    app.run(debug=True, use_reloader=False)
+    socketio.run(app, debug=True, use_reloader=False)
