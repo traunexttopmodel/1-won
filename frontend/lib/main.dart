@@ -599,40 +599,44 @@ class _DriveScreenState extends State<DriveScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous screen
-          },
-        ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () {
+          Navigator.pop(context); // Navigate back to the previous screen
+        },
       ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (_warning == 0)
-                    Text("No Warnings", style: TextStyle(fontSize: 24, color: Colors.black54)),
-                ],
-              ),
+    ),
+    body: Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFE3F2FD), Color(0xFFBBDEFB)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-          if (_warning == 1)
-            _buildWarningBox(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_warning == 0)
+                  Text("No Warnings", style: TextStyle(fontSize: 24, color: Colors.black54)),
+              ],
+            ),
+          ),
+        ),
+        if (_warning == 1)
+          Positioned(
+            top: 30,
+            left: 20,
+            right: 20,
+            child: _buildWarningBox(
               key: ValueKey("FirstWarning"),
               title: "Alert!",
               message: "Fatigue levels rising; consider taking a break.",
@@ -640,8 +644,13 @@ class _DriveScreenState extends State<DriveScreen> {
               headerColor: Color(0xFFFFF9CC),
               hasDismissButton: false,
             ),
-          if (_warning == 2)
-            _buildWarningBox(
+          ),
+        if (_warning == 2)
+          Positioned(
+            top: 30,
+            left: 20,
+            right: 20,
+            child: _buildWarningBox(
               key: ValueKey("SecondWarning"),
               title: "Warning!",
               message: "Significant drowsiness; please safely pull over.",
@@ -649,10 +658,12 @@ class _DriveScreenState extends State<DriveScreen> {
               headerColor: Color(0xFFFFE4E4),
               hasDismissButton: true,
             ),
-        ],
-      ),
-    );
-  }
+          ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildWarningBox({
     required Key key,
