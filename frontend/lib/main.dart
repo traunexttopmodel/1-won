@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 void main() {
   runApp(MindYourDriveApp());
@@ -22,10 +23,7 @@ class MindYourDriveScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFFB3DFF8),
-              Color(0xFFEBF7FC)
-            ], // Light blue gradient
+            colors: [Color(0xFFB3DFF8), Color(0xFFEBF7FC)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -36,38 +34,23 @@ class MindYourDriveScreen extends StatelessWidget {
             children: [
               const Column(
                 children: [
-                  SizedBox(height: 30), // Padding from the top
+                  SizedBox(height: 30),
                   Text(
                     "Welcome To",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black87,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400, color: Colors.black87),
                   ),
                   SizedBox(height: 10),
                   Text(
                     "Mind Your Drive",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
                   SizedBox(height: 20),
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 40.0,
-                      vertical: 50.0,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 40.0, vertical: 50.0),
                     child: Text(
                       "Drive with confidence knowing we’ve got your back",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black87,
-                      ),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black87),
                     ),
                   ),
                 ],
@@ -79,62 +62,32 @@ class MindYourDriveScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      offset: Offset(0, 5),
-                    ),
-                  ],
+                  boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
                 ),
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Center vertically
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center, // Center horizontally
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/brain.png',
-                      height: 100,
-                      width: 100,
-                      color: Colors.grey[700],
-                    ),
+                    Image.asset('assets/brain.png', height: 100, width: 100, color: Colors.grey[700]),
                     const SizedBox(height: 20),
                     const Text(
                       "Please gently put your device across your forehead and click continue when ready",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
+                      style: TextStyle(fontSize: 14, color: Colors.black87),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Navigate to the new page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => InstructionsPage(),
-                          ),
-                        );
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => InstructionsPage()));
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            const Color(0xFFB3DFF8), // Light blue color
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                        backgroundColor: const Color(0xFFB3DFF8),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                       ),
                       child: const Text(
                         "Continue",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -527,7 +480,7 @@ class NextPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DrivesOverviewScreen()),
+                            builder: (context) => CountdownScreen()),
                       );
                     }
                     ;
@@ -555,35 +508,6 @@ class NextPage extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class DrivesOverviewScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Your Drives"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // Navigate to the Countdown Screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CountdownScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Center(
-        child: Text(
-          "Total Drives: 5", // Replace with actual data
-          style: TextStyle(fontSize: 24),
         ),
       ),
     );
@@ -636,46 +560,41 @@ class DriveScreen extends StatefulWidget {
   _DriveScreenState createState() => _DriveScreenState();
 }
 
-class _DriveScreenState extends State<DriveScreen>
-    with SingleTickerProviderStateMixin {
-  int _countdown = 5;
-  bool _showCountdown = true;
-  bool _showWarning = false;
-  late AnimationController _controller;
-  late Animation<double> _brainSlideAnimation;
+class _DriveScreenState extends State<DriveScreen> {
+  int _warning = 0; // Initial warning level
+  late IO.Socket socket;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _brainSlideAnimation =
-        Tween<double>(begin: 0, end: 200).animate(_controller);
+    _connectToSocket();
+  }
 
-    // Start the countdown
-    Timer.periodic(Duration(seconds: 1), (Timer timer) {
+  void _connectToSocket() {
+    socket = IO.io('http://127.0.0.1:5000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': true,
+    });
+
+    socket.on('connect', (_) {
+      print('Connected to the server');
+    });
+
+    socket.on('update_warning', (data) {
+      print('Received data: $data'); // Debug print
       setState(() {
-        if (_countdown > 0) {
-          _countdown--;
-        } else {
-          timer.cancel();
-          _showCountdown = false; // Hide the countdown
-          _controller.forward(); // Start the brain animation
-          Future.delayed(Duration(seconds: 5), () {
-            setState(() {
-              _showWarning = true; // Show the warning after 5 seconds
-            });
-          });
-        }
+        _warning = data['warning'] ?? 0; // Update warning state with data from server
       });
+    });
+
+    socket.on('disconnect', (_) {
+      print('Disconnected from the server');
     });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    socket.dispose(); // Clean up the socket connection
     super.dispose();
   }
 
@@ -706,56 +625,35 @@ class _DriveScreenState extends State<DriveScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (_showCountdown)
-                    Text(
-                      "Starting in $_countdown",
-                      style:
-                          TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-                    ),
-                  if (!_showCountdown && !_showWarning)
-                    AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, _brainSlideAnimation.value),
-                          child: CircleAvatar(
-                            radius: 100,
-                            backgroundColor: Colors.green[300],
-                            child: Image.asset(
-                              'assets/brain.png',
-                              height: 100,
-                              width: 100,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                  if (_warning == 0)
+                    Text("No Warnings", style: TextStyle(fontSize: 24, color: Colors.black54)),
                 ],
               ),
             ),
           ),
-          if (_showWarning)
-            Positioned(
-              top: 30, // Adjusted position to move warning box higher
-              left: 20,
-              right: 20,
-              child: _buildWarningBox(
-                key: ValueKey("WarningBox"),
-                title: "Warning!",
-                message: "Significant drowsiness; please safely pull over.",
-                description:
-                    "A loud alarm will play periodically until dismissed.",
-                headerColor: Color(0xFFFFE4E4), // Pastel Red for the header
-                hasDismissButton: true,
-              ),
+          if (_warning == 1)
+            _buildWarningBox(
+              key: ValueKey("FirstWarning"),
+              title: "Alert!",
+              message: "Fatigue levels rising; consider taking a break.",
+              description: "A short chime will play. No action required.",
+              headerColor: Color(0xFFFFF9CC),
+              hasDismissButton: false,
+            ),
+          if (_warning == 2)
+            _buildWarningBox(
+              key: ValueKey("SecondWarning"),
+              title: "Warning!",
+              message: "Significant drowsiness; please safely pull over.",
+              description: "A loud alarm will play periodically until dismissed.",
+              headerColor: Color(0xFFFFE4E4),
+              hasDismissButton: true,
             ),
         ],
       ),
     );
   }
 
-  // Your existing _buildWarningBox method
   Widget _buildWarningBox({
     required Key key,
     required String title,
@@ -763,99 +661,76 @@ class _DriveScreenState extends State<DriveScreen>
     required String description,
     required Color headerColor,
     required bool hasDismissButton,
-    String? actionLabel,
   }) {
-    return Container(
-      key: key,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8.0,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header directly touching the top of the box
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            decoration: BoxDecoration(
-              color: headerColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
+    return Positioned(
+      top: 30,
+      left: 20,
+      right: 20,
+      child: Container(
+        key: key,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.0),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8.0, offset: Offset(0, 2))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              decoration: BoxDecoration(
+                color: headerColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                ),
+              ),
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
               ),
             ),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, color: Colors.black87, height: 1.4),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    description,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16, color: Colors.black54, height: 1.4),
+                  ),
+                  const SizedBox(height: 20),
+                  if (hasDismissButton)
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // Handle Dismiss Alarm action
+                      },
+                      icon: const Icon(Icons.notifications_off, color: Colors.black54),
+                      label: const Text(
+                        "Dismiss Alarm",
+                        style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                        elevation: 2,
+                        side: const BorderSide(color: Colors.black12),
+                      ),
+                    ),
+                ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    color: Colors.black87,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  description,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                    height: 1.4,
-                  ),
-                ),
-                const SizedBox(height: 20), // Increased space before the button
-                if (hasDismissButton)
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      // Handle Dismiss Alarm action
-                    },
-                    icon: const Icon(
-                      Icons.notifications_off,
-                      color: Colors.black54,
-                    ),
-                    label: const Text(
-                      "Dismiss Alarm",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      elevation: 2,
-                      side: const BorderSide(color: Colors.black12),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
