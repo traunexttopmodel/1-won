@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+
+Future<Map<String, dynamic>> fetchWarnings() async {
+  final response = await http.get(Uri.parse('http://192.168.1.87:5001/process-eeg'));
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to load warning data');
+  }
+}
 
 void main() {
   runApp(MindYourDriveApp());
@@ -561,7 +573,21 @@ class NextPage extends StatelessWidget {
   }
 }
 
-class DrivesOverviewScreen extends StatelessWidget {
+class DrivesOverviewScreen extends StatefulWidget {
+  @override
+  _DrivesOverviewScreenState createState() => _DrivesOverviewScreenState();
+}
+
+class _DrivesOverviewScreenState extends State<DrivesOverviewScreen> {
+  late Future<Map<String, dynamic>> _warningData;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the warning data when the screen is initialized
+    _warningData = fetchWarnings();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -569,26 +595,60 @@ class DrivesOverviewScreen extends StatelessWidget {
         title: Text("Your Drives"),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.refresh),
             onPressed: () {
-              // Navigate to the Countdown Screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CountdownScreen()),
-              );
+              setState(() {
+                _warningData = fetchWarnings();
+              });
             },
           ),
         ],
       ),
-      body: Center(
-        child: Text(
-          "Total Drives: 5", // Replace with actual data
-          style: TextStyle(fontSize: 24),
-        ),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _warningData,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final data = snapshot.data!;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Theta/Beta Ratio: ${data['theta_beta_ratio'].toStringAsFixed(2)}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    "Alpha/Theta Ratio: ${data['alpha_theta_ratio'].toStringAsFixed(2)}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    "Warning Level: ${data['warning'] == 2 ? 'Severe' : data['warning'] == 1 ? 'Mild' : 'None'}",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: data['warning'] == 2
+                          ? Colors.red
+                          : data['warning'] == 1
+                              ? Colors.orange
+                              : Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Center(child: Text('No data available'));
+          }
+        },
       ),
     );
   }
 }
+
 
 class CountdownScreen extends StatefulWidget {
   @override
