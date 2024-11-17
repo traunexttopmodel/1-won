@@ -101,7 +101,7 @@ class MindYourDriveScreen extends StatelessWidget {
   }
 }
 
-// instructions
+
 
 class InstructionsPage extends StatefulWidget {
   @override
@@ -127,7 +127,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous screen
+            Navigator.pop(context); 
           },
         ),
       ),
@@ -136,7 +136,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFEBF7FC), Color(0xFFB3DFF8)], // Soft gradient
+              colors: [Color(0xFFEBF7FC), Color(0xFFB3DFF8)], 
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -147,7 +147,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Instructions Box
+                  
                   Container(
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
@@ -190,7 +190,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Expanded Warning Box with Animation
+                  
                   Expanded(
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 500),
@@ -203,10 +203,10 @@ class _InstructionsPageState extends State<InstructionsPage> {
                               description:
                                   "A short chime will play.\n No action required.",
                               headerColor:
-                                  const Color(0xFFFFF9CC), // Pastel Yellow
+                                  const Color(0xFFFFF9CC), 
                               hasDismissButton: false,
                               actionLabel:
-                                  "No Action Required", // Label for yellow warning
+                                  "No Action Required", 
                             )
                           : _buildWarningBox(
                               key: const ValueKey("SecondWarning"),
@@ -216,7 +216,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
                               description:
                                   "A loud alarm will play periodically until dismissed.",
                               headerColor:
-                                  const Color(0xFFFFE4E4), // Pastel Red
+                                  const Color(0xFFFFE4E4), 
                               hasDismissButton: true,
                             ),
                     ),
@@ -240,7 +240,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                NextPage(), // Replace with your next page
+                                NextPage(), 
                           ),
                         );
                       },
@@ -272,7 +272,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
     );
   }
 
-  // Helper method to build warning box with an optional Dismiss button or label
+ 
   Widget _buildWarningBox({
     required Key key,
     required String title,
@@ -283,7 +283,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
     String? actionLabel,
   }) {
     return Container(
-      key: key, // Use the provided key for AnimatedSwitcher
+      key: key, 
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
@@ -298,7 +298,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header directly touching the top of the box
+          
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -343,7 +343,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 20), // Increased space before the button
+                const SizedBox(height: 20), 
                 if (actionLabel != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -371,7 +371,7 @@ class _InstructionsPageState extends State<InstructionsPage> {
                 if (hasDismissButton)
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Handle Dismiss Alarm action
+                     
                     },
                     icon: const Icon(
                       Icons.notifications_off,
@@ -417,7 +417,7 @@ class NextPage extends StatelessWidget {
             colors: [
               Color(0xFFE3F2FD),
               Color(0xFFBBDEFB)
-            ], // Gradient background
+            ], 
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -476,7 +476,7 @@ class NextPage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     {
-                      // Navigate to the menu screen
+                     
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -525,14 +525,14 @@ class _CountdownScreenState extends State<CountdownScreen> {
   @override
   void initState() {
     super.initState();
-    // Start the countdown
+    
     Timer.periodic(Duration(seconds: 1), (Timer timer) {
       setState(() {
         if (_countdown > 0) {
           _countdown--;
         } else {
           timer.cancel();
-          // Navigate to the Drive Screen
+         
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => DriveScreen()),
@@ -561,7 +561,7 @@ class DriveScreen extends StatefulWidget {
 }
 
 class _DriveScreenState extends State<DriveScreen> {
-  int _warning = 0; // Initial warning level
+  int _warning = 0; 
   late IO.Socket socket;
 
   @override
@@ -581,9 +581,9 @@ class _DriveScreenState extends State<DriveScreen> {
     });
 
     socket.on('update_warning', (data) {
-      print('Received data: $data'); // Debug print
+      print('Received data: $data'); 
       setState(() {
-        _warning = data['warning'] ?? 0; // Update warning state with data from server
+        _warning = data['warning'] ?? 0; 
       });
     });
 
@@ -594,7 +594,7 @@ class _DriveScreenState extends State<DriveScreen> {
 
   @override
   void dispose() {
-    socket.dispose(); // Clean up the socket connection
+    socket.dispose(); 
     super.dispose();
   }
 
@@ -607,7 +607,7 @@ Widget build(BuildContext context) {
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: Colors.black),
         onPressed: () {
-          Navigator.pop(context); // Navigate back to the previous screen
+          Navigator.pop(context); 
         },
       ),
     ),
@@ -723,7 +723,7 @@ Widget build(BuildContext context) {
                   if (hasDismissButton)
                     ElevatedButton.icon(
                       onPressed: () {
-                        // Handle Dismiss Alarm action
+                        
                       },
                       icon: const Icon(Icons.notifications_off, color: Colors.black54),
                       label: const Text(
